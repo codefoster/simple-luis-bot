@@ -1,17 +1,21 @@
 import { ConsoleAdapter } from "botbuilder";
-import { QnAMaker, QnAMakerEndpoint } from "botbuilder-ai";
+import { LuisRecognizer, LuisRecognizerSettings } from "botbuilder-ai";
 
 require('dotenv').config();
 
 let adapter = new ConsoleAdapter();
 
 adapter.listen(async context => {
-    let qna = new QnAMaker({
-        host: process.env.QNA_HOST,
-        endpointKey: process.env.QNA_ENDPOINT_KEY,
-        knowledgeBaseId: process.env.QNA_KBID
-    } as QnAMakerEndpoint);
-    
-    let answers = await qna.generateAnswer(context.activity.text);
-    context.sendActivity(JSON.stringify(answers, null, 2));
+    const luis = new LuisRecognizer({
+        appId: process.env.APP_ID,
+        subscriptionKey: process.env.LUIS_SUBSCRIPTION_KEY,
+        serviceEndpoint: process.env.LUIS_SERVICE_ENDPOINT, /*i.e. 'https://westus.api.cognitive.microsoft.com'*/
+        options: { verbose: true }
+    } as LuisRecognizerSettings);
+
+        let results = await luis.recognize(context);
+        context.sendActivity(JSON.stringify(results, null, 2));
 })
+
+let branchOne = c => c.sendActivity('branch one');
+let branchTwo = c => c.sendActivity('branch two');
